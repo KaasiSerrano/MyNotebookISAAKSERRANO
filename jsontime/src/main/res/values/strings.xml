@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">JsonTime</string>
+    <string name="this_is_the_button">This is the button</string>
+    <string name="plz_s_top_bugging_me" />
+</resources>
