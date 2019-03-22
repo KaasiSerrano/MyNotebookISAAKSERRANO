@@ -44,6 +44,20 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     //=============================================================
 
+    // Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
+
+    // Gson
+    implementation 'com.google.code.gson:gson:2.8.5'
+   //recyclerView
+    //recyclerview
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    // card view
+      implementation 'androidx.cardview:cardview:1.0.0'
+
+
+
     androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.2'

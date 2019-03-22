@@ -16,6 +16,8 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.example.jsontime.retrofit.RetrofitClientInstance;
+import com.example.jsontime.retrofit.ShibeService;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
@@ -31,9 +33,13 @@ import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     Button LoadButton;
@@ -61,6 +67,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //new ImageDownloadedrAsyncTask(MainActivity.this).execute();
         //Toast.makeText(this, "THIS IS A BUTTON", Toast.LENGTH_SHORT).show();
+    }
+
+    private void retrofitRequest() {
+        ShibeService shibeService =
+                RetrofitClientInstance
+                .getRetrofit()
+                .create(ShibeService.class);
+        Call<List<String>> call = shibeService.loadShibe((20));
+        call.enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(Call<List<String>> call, retrofit2.Response<List<String>> response) {
+               if(response.isSuccessful())
+               {
+                   assert response.body() != null;
+                   Log.d(TAG,"onResponse" +response.body().toString());
+                   EventBus.getDefault().post(new ImageEvent (response.body().get(0),response.body()));
+
+               } else
+               {
+                   assert response.errorBody() != null;
+                   Log.d(TAG,"onResponse" +response.errorBody().toString());
+               }
+            }
+
+            @Override
+            public void onFailure(Call<List<String>> call, Throwable t) {
+                Log.d(TAG,"onFailure"+ t.getLocalizedMessage());
+
+            }
+        });
+
     }
 
     private class ImageDownloadedrAsyncTask extends AsyncTask<Void,Void,Void>{
@@ -103,11 +140,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }finally {
                 httpURLConnection.disconnect();
             }
-            EventBus.getDefault().post(new ImageEvent(result.toString()));
+           // EventBus.getDefault().post(new ImageEvent(result.toString()));
             return null;
         }
     }
-    public void volleyRequest ()
+    private void volleyRequest ()
     {
         Log.d(TAG ,"on Enter volleyRequest :");
 
@@ -135,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             Log.d(TAG ,"on Response: "+ response.get(0));
 
 
-                            EventBus.getDefault().post(new ImageEvent(response.get(0).toString()));
+                         //   EventBus.getDefault().post(new ImageEvent(response.get(0).toString()));
 
 
                         } catch (JSONException e) {
