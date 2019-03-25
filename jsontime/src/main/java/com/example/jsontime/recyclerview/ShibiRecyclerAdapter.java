@@ -26,11 +26,10 @@ public class ShibiRecyclerAdapter extends RecyclerView.Adapter<ShibiRecyclerAdap
     }
 
 
-
     @NonNull
     @Override
     public ShibieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
- View itemView = LayoutInflater.from(context).inflate(R.layout.shibe_item_view,parent);
+        View itemView = LayoutInflater.from(context).inflate(R.layout.shibe_item_view, parent, false);
 
         return new ShibieViewHolder(itemView);
     }
@@ -42,8 +41,6 @@ public class ShibiRecyclerAdapter extends RecyclerView.Adapter<ShibiRecyclerAdap
         Glide.with(context).load(url).into(holder.ivShibe);
 
 
-
-
     }
 
     @Override
@@ -51,8 +48,12 @@ public class ShibiRecyclerAdapter extends RecyclerView.Adapter<ShibiRecyclerAdap
         return urls.size();
     }
 
-    public class ShibieViewHolder extends RecyclerView.ViewHolder
-    {
+    public void setData(List<String> urls) {
+        this.urls = urls;
+        notifyDataSetChanged();
+    }
+
+    public class ShibieViewHolder extends RecyclerView.ViewHolder {
         private ImageView ivShibe;
         private AppCompatTextView tvUrl;
 

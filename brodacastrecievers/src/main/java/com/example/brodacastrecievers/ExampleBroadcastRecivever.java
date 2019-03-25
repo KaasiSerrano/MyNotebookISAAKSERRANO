@@ -14,9 +14,5 @@ public class ExampleBroadcastRecivever extends BroadcastReceiver {
         if (Intent.ACTION_AIRPLANE_MODE_CHANGED.equals(intent.getAction())) {
             Toast.makeText(context, "Airplane Mode Changed", Toast.LENGTH_SHORT).show();
         }
-
-
-
-
     }
 }

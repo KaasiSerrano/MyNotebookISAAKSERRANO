@@ -6,23 +6,20 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.Glide;
 import com.example.jsontime.retrofit.RetrofitClientInstance;
 import com.example.jsontime.retrofit.ShibeService;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -39,10 +36,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    Button LoadButton;
+    Button buttonvolley,buttonNative,buttonRetrofit;
+    TextView  tv_numbers;
     ImageFragment imageFragment;
     String TAG = "THIS_IS_A_THING_IDK_DUDE";
     ImageView imageView;
@@ -52,55 +49,79 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        LoadButton = findViewById(R.id.button);
-        LoadButton.setOnClickListener(this);
-        Log.d(TAG ,"on Error Response: ");
+
+        tv_numbers = findViewById(R.id.editText);
+
+        buttonNative = findViewById(R.id.buttonNative);
+        buttonNative.setOnClickListener(this);
+
+        buttonRetrofit= findViewById(R.id.buttonRetrofit);
+        buttonRetrofit.setOnClickListener(this);
+
+
+
+        buttonvolley = findViewById(R.id.buttonvolley);
+        buttonvolley.setOnClickListener(this);
+        Log.d(TAG, "on Error Response: ");
 
     }
 
     @Override
     public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.buttonvolley: {
+                Log.d(TAG, "Button volley was clicked ");
+                volleyRequest();
+            }break;
 
-        //volleyRequest();
-        retrofitRequest();
-        Log.d(TAG ,"on Click Response: ");
+            case R.id.buttonRetrofit :{
+                Log.d(TAG, "Button retrofit was clicked");
 
-        //new ImageDownloadedrAsyncTask(MainActivity.this).execute();
+                retrofitRequest();
+
+            }break;
+            case R.id.buttonNative: {
+                Log.d(TAG, "Button native was clicked");
+
+                new ImageDownloadedrAsyncTask(MainActivity.this).execute();
+
+            }break;
+        }
+
+
         //Toast.makeText(this, "THIS IS A BUTTON", Toast.LENGTH_SHORT).show();
     }
 
     private void retrofitRequest() {
         ShibeService shibeService =
                 RetrofitClientInstance
-                .getRetrofit()
-                .create(ShibeService.class);
+                        .getRetrofit()
+                        .create(ShibeService.class);
         Call<List<String>> call = shibeService.loadShibe((20));
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, retrofit2.Response<List<String>> response) {
-               if(response.isSuccessful())
-               {
-                   assert response.body() != null;
-                   Log.d(TAG,"onResponse" +response.body().toString());
-                   EventBus.getDefault().post(new ImageEvent (response.body().get(0),response.body()));
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+                    Log.d(TAG, "onResponse" + response.body().toString());
+                    EventBus.getDefault().post(new ImageEvent(response.body().get(0), response.body()));
 
-               } else
-               {
-                   assert response.errorBody() != null;
-                   Log.d(TAG,"onResponse" +response.errorBody().toString());
-               }
+                } else {
+                    assert response.errorBody() != null;
+                    Log.d(TAG, "onResponse" + response.errorBody().toString());
+                }
             }
 
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
-                Log.d(TAG,"onFailure"+ t.getLocalizedMessage());
+                Log.d(TAG, "onFailure" + t.getLocalizedMessage());
 
             }
         });
 
     }
 
-    private class ImageDownloadedrAsyncTask extends AsyncTask<Void,Void,Void>{
+    private class ImageDownloadedrAsyncTask extends AsyncTask<Void, Void, Void> {
 
         WeakReference<MainActivity> activityWeakReference;
         HttpURLConnection httpURLConnection;
@@ -117,17 +138,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             StringBuilder result = new StringBuilder();
 
-            try {
-                URL url = new URL(baseURL+query);
+            try {//create URL object passing the url string in the constructor
+                URL url = new URL(baseURL + query);
+                //we use the url object to create a new open connection(), then cast it as a HTTP URL connection
                 httpURLConnection = (HttpURLConnection) url.openConnection();
+
+                //create a imput stream instance and initalize it with a BufferedInputStream
+                //passing the stream from the httpURLconnection object instance
+
                 InputStream inputStream = new BufferedInputStream(httpURLConnection.getInputStream());
 
 
+                //create an ImputStreamReader Object instance and initalize it with the inputstream
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                //we create a BufferReader Object instance and initalize it with our inputStreamReader
                 BufferedReader reader = new BufferedReader(inputStreamReader);
 
                 String line;
-                while ((line = reader.readLine())!=null){
+
+                // Using the bufferReader we read each line of the response and append it into our
+                // string builder object instance
+
+                while ((line = reader.readLine()) != null) {
                     result.append(line);
 
 
@@ -137,21 +169,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
-            }finally {
+            } finally {
+                //Important to disconnect our HttpURL connection when we are done
                 httpURLConnection.disconnect();
             }
-           // EventBus.getDefault().post(new ImageEvent(result.toString()));
+            //used eventbus as our data transfer.
+            // EventBus.getDefault().post(new ImageEvent(result.toString()));
             return null;
         }
     }
-    private void volleyRequest ()
-    {
-        Log.d(TAG ,"on Enter volleyRequest :");
 
+    private void volleyRequest() {
+        Log.d(TAG, "on Enter volleyRequest :");
+//create url
         String baseUrl = "http://shibe.online/api/shibes?";
-        String query = "count=1";
-        final String url = baseUrl+query;
-
+        int querynumber;
+        String query = "count="+"1";
+        final String url = baseUrl + query;
+//create a RequestQueue instance object instance and initalize it with the VOlly class
         RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
 
         //JsonArrayRequest meaining [] array
@@ -160,19 +195,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //depending on what you're expecting to get back
 
         //in this case we're using JsonArrayRequest
-        Log.d(TAG ,"on JustBefore jsonArrayRequest :");
+        Log.d(TAG, "on JustBefore jsonArrayRequest :");
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
-
 
 
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
                         try {
-                            Log.d(TAG ,"on Response: "+ response.get(0));
+                            Log.d(TAG, "on Response: " + response.get(0));
 
 
-                         //   EventBus.getDefault().post(new ImageEvent(response.get(0).toString()));
+                            //   EventBus.getDefault().post(new ImageEvent(response.get(0).toString()));
 
 
                         } catch (JSONException e) {
@@ -186,14 +220,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d(TAG ,"on Error Response: "+ error.toString());
+                Log.d(TAG, "on Error Response: " + error.toString());
             }
         });
 
         requestQueue.add(jsonArrayRequest);
-
-
-
 
 
     }
