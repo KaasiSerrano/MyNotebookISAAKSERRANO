@@ -68,13 +68,21 @@ public class ImageFragment extends Fragment {
     public void imageEvent(ImageEvent imageEvent) {
         if (imageEvent.imageURL != null) {
             String url = imageEvent.imageURL;
+            Log.d(TAG, "imageEvent: ImageURL: "+imageEvent.toString());
+
             Toast.makeText(getContext(), "ImageEvent", Toast.LENGTH_SHORT).show();
 
             Log.d(TAG, imageEvent.imageURL);
-            //Glide.with(getActivity()).load(url).into(imageView);
-            //recyclerView.setAdapter(new ShibiRecyclerAdapter(getContext(),imageEvent.imageUrls));
+
+
+           // Glide.with(getActivity()).load(url).into(recyclerView);
+
+           // recyclerView.setAdapter(new ShibiRecyclerAdapter(getContext(),imageEvent.imageUrls));
+            Log.d(TAG, "imageEvent: IMAGEURL" + imageEvent.imageURL);
             shibiRecyclerAdapter.setData(imageEvent.imageUrls);
-            //  listView.setAdapter(new ShibeAdapter(getContext(),imageEvent.imageUrls));
+            //listView.setAdapter(new ShibeAdapter(getContext(),imageEvent.imageUrls));
+
+
         }
     }
 

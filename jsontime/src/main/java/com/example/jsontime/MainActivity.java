@@ -27,9 +27,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.Nullable;
@@ -43,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ImageFragment imageFragment;
     String TAG = "THIS_IS_A_THING_IDK_DUDE";
     ImageView imageView;
-
+    int num1;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         tv_numbers = findViewById(R.id.editText);
+
 
         buttonNative = findViewById(R.id.buttonNative);
         buttonNative.setOnClickListener(this);
@@ -68,22 +71,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+
+        num1 = Integer.parseInt(tv_numbers.getText().toString());
+
+
+
         switch (v.getId()) {
+
             case R.id.buttonvolley: {
                 Log.d(TAG, "Button volley was clicked ");
-                volleyRequest();
+                retrofitRequest(num1);
+                //volleyRequest();
             }break;
 
             case R.id.buttonRetrofit :{
                 Log.d(TAG, "Button retrofit was clicked");
-
-                retrofitRequest();
+                retrofitRequest(num1);
 
             }break;
             case R.id.buttonNative: {
                 Log.d(TAG, "Button native was clicked");
-
-                new ImageDownloadedrAsyncTask(MainActivity.this).execute();
+                retrofitRequest(num1);
+                //new ImageDownloadedrAsyncTask(MainActivity.this).execute();
 
             }break;
         }
@@ -92,23 +101,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Toast.makeText(this, "THIS IS A BUTTON", Toast.LENGTH_SHORT).show();
     }
 
-    private void retrofitRequest() {
+    private void retrofitRequest(int number) {
         ShibeService shibeService =
                 RetrofitClientInstance
                         .getRetrofit()
                         .create(ShibeService.class);
-        Call<List<String>> call = shibeService.loadShibe((20));
+        Call<List<String>> call = shibeService.loadShibe((number));
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, retrofit2.Response<List<String>> response) {
                 if (response.isSuccessful()) {
                     assert response.body() != null;
-                    Log.d(TAG, "onResponse" + response.body().toString());
+                    Log.d(TAG, "onResponse000000 " + response.body().get(0));
+
+
                     EventBus.getDefault().post(new ImageEvent(response.body().get(0), response.body()));
 
                 } else {
                     assert response.errorBody() != null;
-                    Log.d(TAG, "onResponse" + response.errorBody().toString());
+                    Log.d(TAG, "onResponse1" + response.errorBody().toString());
                 }
             }
 
@@ -174,7 +185,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 httpURLConnection.disconnect();
             }
             //used eventbus as our data transfer.
-            // EventBus.getDefault().post(new ImageEvent(result.toString()));
+
+            Log.d(TAG, "doInBackground:412321 "+result.substring(2,result.length()-2));
+
+
+           // EventBus.getDefault().post(new ImageEvent(response.body().get(0), response.body()));
+
+            EventBus.getDefault().post(new ImageEvent(result.substring(2,result.length()-2), new ArrayList<String>()));
+
             return null;
         }
     }
@@ -184,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //create url
         String baseUrl = "http://shibe.online/api/shibes?";
         int querynumber;
-        String query = "count="+"1";
+        String query = "count=1";
         final String url = baseUrl + query;
 //create a RequestQueue instance object instance and initalize it with the VOlly class
         RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
@@ -203,10 +221,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onResponse(JSONArray response) {
                         try {
-                            Log.d(TAG, "on Response: " + response.get(0));
+                            Log.d(TAG, "on Response: " + response.get(0).toString());
 
-
-                            //   EventBus.getDefault().post(new ImageEvent(response.get(0).toString()));
+                            EventBus.getDefault().post(new ImageEvent(response.get(0).toString(),new ArrayList<String>()));
+                            // EventBus.getDefault().post(new ImageEvent(response,response.body);
 
 
                         } catch (JSONException e) {
