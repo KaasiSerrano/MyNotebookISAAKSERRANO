@@ -13,12 +13,10 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.android.background.MainActivity;
-import com.example.android.background.R;
-import com.example.android.background.sync.ReminderTasks;
-import com.example.android.background.sync.WaterReminderIntentService;
+import com.example.notifications.MainActivity;
 import com.example.notifications.R;
 import com.example.notifications.sync.ReminderTasks;
+import com.example.notifications.sync.WaterReminderIntentService;
 
 public class NotificaitonUtils {
 
@@ -130,7 +128,7 @@ Intent startActivityIntent= new Intent(context , MainActivity.class);
         // should return a PendingIntent. This method will create the pending intent which will trigger when
         // the notification is pressed. This pending intent should open up the MainActivity.
         // completed (2) Create an intent that opens up the MainActivity
-        Intent StartActivityIntent = new Intent(context,MainActivity.class);
+        Intent StartActivityIntent = new Intent(context, MainActivity.class);
         // completed (3) Create a PendingIntent using getActivity that:
         // - Take the context passed in as a parameter
         // - Takes an unique integer ID for the pending intent (you can create a constant for

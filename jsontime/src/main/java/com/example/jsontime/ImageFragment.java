@@ -48,7 +48,6 @@ public class ImageFragment extends Fragment {
         View view = inflater.inflate(R.layout.imagefragment, container, false);
         listView = view.findViewById(R.id.list_view);
         recyclerView = view.findViewById(R.id.rv_shibidawg);
-
         return view;
     }
 

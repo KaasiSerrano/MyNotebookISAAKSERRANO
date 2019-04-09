@@ -2,11 +2,13 @@ package com.example.jsontime;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -72,30 +74,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
 
-        num1 = Integer.parseInt(tv_numbers.getText().toString());
 
-
-
-        switch (v.getId()) {
-
-            case R.id.buttonvolley: {
-                Log.d(TAG, "Button volley was clicked ");
-                retrofitRequest(num1);
-                //volleyRequest();
-            }break;
-
-            case R.id.buttonRetrofit :{
-                Log.d(TAG, "Button retrofit was clicked");
-                retrofitRequest(num1);
-
-            }break;
-            case R.id.buttonNative: {
-                Log.d(TAG, "Button native was clicked");
-                retrofitRequest(num1);
-                //new ImageDownloadedrAsyncTask(MainActivity.this).execute();
-
-            }break;
+        if(tv_numbers.getText().toString().matches("")||Integer.parseInt(tv_numbers.getText().toString()) > 100)
+        {
+            Toast.makeText(this, "You must input a number or one 100 or lower", Toast.LENGTH_SHORT).show();
         }
+
+        else
+        {
+            num1 = Integer.parseInt(tv_numbers.getText().toString());
+            switch (v.getId()) {
+
+                case R.id.buttonvolley: {
+                    Log.d(TAG, "Button volley was clicked ");
+                    retrofitRequest(num1);
+                    //volleyRequest();
+                }break;
+
+                case R.id.buttonRetrofit :{
+                    Log.d(TAG, "Button retrofit was clicked");
+                    retrofitRequest(num1);
+
+                }break;
+                case R.id.buttonNative: {
+                    Log.d(TAG, "Button native was clicked");
+                    retrofitRequest(num1);
+                    //new ImageDownloadedrAsyncTask(MainActivity.this).execute();
+
+                }break;
+            }
+
+        }
+
+
+
+
+
 
 
         //Toast.makeText(this, "THIS IS A BUTTON", Toast.LENGTH_SHORT).show();
@@ -106,7 +120,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 RetrofitClientInstance
                         .getRetrofit()
                         .create(ShibeService.class);
+
         Call<List<String>> call = shibeService.loadShibe((number));
+
+
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, retrofit2.Response<List<String>> response) {
